@@ -17,7 +17,12 @@ import org.opencv.core.MatOfDouble;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
-
+/******************************************************************************
+ 说明：
+ 衡量画面模糊程度的主要方法就是梯度的的统计特征，通常梯度值越高，
+ 画面边缘信息越丰富，画面越清晰。然而需要注意，对于一些文理比较
+ 少的画面，即使不失焦，梯度值也很小。
+ ******************************************************************************/
 public class CheckDistinctActivity extends AppCompatActivity implements View.OnClickListener {
     private Bitmap originalBitmap1;
     private Bitmap originalBitmap2;
@@ -65,7 +70,6 @@ public class CheckDistinctActivity extends AppCompatActivity implements View.OnC
         //计算垂直方向梯度
         Imgproc.Sobel(grayMat, grad_y, CvType.CV_16S, 0, 1, 3, 1, 0);
 
-        Imgproc.Sobel(grayMat,sobel,CvType.CV_16U,1,1);
         //计算两个方向上梯度绝对值
         Core.convertScaleAbs(grad_x, abs_grad_x);
         Core.convertScaleAbs(grad_y, abs_grad_y);
