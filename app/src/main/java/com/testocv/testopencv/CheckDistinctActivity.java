@@ -33,8 +33,8 @@ public class CheckDistinctActivity extends AppCompatActivity implements View.OnC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_check_distinct);
-        originalBitmap1 = BitmapUtil.readBitmap(this, R.drawable.people);
-        originalBitmap2 = BitmapUtil.readBitmap(this, R.drawable.people_filter);
+        originalBitmap1 = BitmapUtil.readBitmap(this, R.drawable.testpic2);
+        originalBitmap2 = BitmapUtil.readBitmap(this, R.drawable.baby);
         binding.btnCheck1.setOnClickListener(this);
         binding.btnCheck2.setOnClickListener(this);
         binding.img.setImageBitmap(originalBitmap1);
@@ -66,9 +66,9 @@ public class CheckDistinctActivity extends AppCompatActivity implements View.OnC
         Imgproc.cvtColor(originalMat, grayMat, Imgproc.COLOR_BGR2GRAY);
 
         //计算水平方向梯度
-        Imgproc.Sobel(grayMat, grad_x, CvType.CV_16S, 1, 0, 3, 1, 0);
+        Imgproc.Sobel(originalMat, grad_x, CvType.CV_16S, 1, 0, 3, 1, 0);
         //计算垂直方向梯度
-        Imgproc.Sobel(grayMat, grad_y, CvType.CV_16S, 0, 1, 3, 1, 0);
+        Imgproc.Sobel(originalMat, grad_y, CvType.CV_16S, 0, 1, 3, 1, 0);
 
         //计算两个方向上梯度绝对值
         Core.convertScaleAbs(grad_x, abs_grad_x);
@@ -86,17 +86,51 @@ public class CheckDistinctActivity extends AppCompatActivity implements View.OnC
         Log.e(TAG, "结束时间: "+System.currentTimeMillis());
     }
 
+    private void Laplacian(int witch){
+        Log.e(TAG, "开始时间: "+System.currentTimeMillis());
+        Mat originalMat = new Mat();
+        if (witch == 1)
+            Utils.bitmapToMat(originalBitmap1, originalMat);
+        else
+            Utils.bitmapToMat(originalBitmap2, originalMat);
+
+
+        Mat grayMat = new Mat();
+        //用来保存结果的Mat
+        Mat sobel = new Mat();
+
+        //将图像转换为灰度
+        Imgproc.cvtColor(originalMat, grayMat, Imgproc.COLOR_BGR2GRAY);
+
+        Imgproc.Laplacian(grayMat,sobel,CvType.CV_16U,3);
+
+
+        MatOfDouble mean=new MatOfDouble();
+        MatOfDouble stdDev=new MatOfDouble();
+        Core.meanStdDev(grayMat,mean,stdDev);
+//        Scalar c = Core.mean(sobel);
+        double dd = mean.toArray()[0];
+        if (witch == 1)
+            binding.t1.setText("清晰度为:" + dd);
+        else
+            binding.t2.setText("清晰度为:" + dd);
+
+        Log.e(TAG, stdDev.toArray()[0]+"  结束时间: "+System.currentTimeMillis());
+
+
+    }
+
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_check1:
                 // 检查图片清晰度
-                Sobel(1);
+                Laplacian(1);
                 break;
             case R.id.btn_check2:
                 // 检查图片清晰度
-                Sobel(2);
+                Laplacian(2);
                 break;
         }
     }
