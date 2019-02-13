@@ -13,7 +13,7 @@ import java.util.List;
 
 public class DFTUtil {
     private static List<Mat> planes;
-	public static Mat complexImage;
+	private static Mat complexImage;
 	
 	private DFTUtil(){}
 	private static final DFTUtil dftUtil = new DFTUtil();
@@ -45,7 +45,7 @@ public class DFTUtil {
 		return magnitude;
 	}
  
-	public void transformImageWithText(Mat image, String watermarkText, Point point, Double fontSize, Scalar scalar) {
+	public Mat transformImageWithText(Mat image, String watermarkText, Point point, Double fontSize, Scalar scalar) {
 		// planes数组中存的通道数若开始不为空,需清空.
 		if (!planes.isEmpty()) {
 			planes.clear();
@@ -68,6 +68,7 @@ public class DFTUtil {
 		Core.flip(complexImage, complexImage, -1);
 		
 		planes.clear();
+		return antitransformImage();
 	}
 	
 	public Mat antitransformImage() {
@@ -99,7 +100,7 @@ public class DFTUtil {
  
 		return padded;
 	}
- 
+
 	/**
 	 * Optimize the magnitude of the complex image obtained from the DFT, to
 	 * improve its visualization

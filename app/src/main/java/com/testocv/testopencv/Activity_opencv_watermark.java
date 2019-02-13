@@ -51,7 +51,8 @@ public class Activity_opencv_watermark extends AppCompatActivity implements View
                 //生成水印图
                 try {
                     String mark = binding.editTextMarkcontent.getText().toString();
-                    generatMark(mark);
+//                    generatMark(mark);
+                    generatMark2(mark);
                     Toast.makeText(this, "生成成功", Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -63,7 +64,7 @@ public class Activity_opencv_watermark extends AppCompatActivity implements View
                 try {
                     if (tranMat != null) {
 //                        getMark();
-                        getWM();
+                        getMark2();
                         Toast.makeText(this, "成功", Toast.LENGTH_SHORT).show();
                     }
                 } catch (Exception e) {
@@ -94,24 +95,63 @@ public class Activity_opencv_watermark extends AppCompatActivity implements View
         binding.imageView.setImageBitmap(originalBitmap1);
     }
 
+    /**
+     * 生成水印更清晰的方法
+     * <p>
+     * 注意：这里的输入图要用灰度图但有个问题，如果用Imgproc.cvtColor会导至生成的图也是灰度的，
+     * <p>最起码我现在没找到办法能把灰度图转回rgb图，思路只能只从通道中分离出灰图作为输入图，等加上水印后再覆盖原通道进行合并，在取水印时同样要进行逆操作
+     *
+     * @param mark
+     */
     private void generatMark2(String mark) {
-//        DFTUtil.getInstance().transformImageWithText();
+        Mat originalMat = new Mat();
+        Utils.bitmapToMat(originalBitmap1, originalMat);
+        List<Mat> channels = new ArrayList<>();
+        Core.split(originalMat, channels);
+
+//        Mat grayMat=new Mat();
+//        //将图像转换为灰度
+//        Imgproc.cvtColor(originalMat, grayMat, Imgproc.COLOR_RGBA2GRAY);
+
+        Scalar scalar = new Scalar(0, 0, 255);
+        Point point = new Point(20, 40);
+        tranMat = DFTUtil.getInstance().transformImageWithText(channels.get(0), mark, point, 1d, scalar);
+//        //将灰度图转换为彩色图
+//        Bitmap jj= BitmapUtil.readBitmap(this, R.drawable.comput_me1);
+//
+//        Mat om=new Mat();
+//        Utils.bitmapToMat(jj,om);
+//        List<Mat> l=new ArrayList<>();
+//        l.add(tranMat);
+//        Core.merge(l,om);
+
+        Mat des = new Mat();
+        channels.set(0, tranMat);
+        Core.merge(channels, des);
+
+//        Imgproc.cvtColor( tranMat, originalMat,Imgproc.COLOR_GRAY2RGBA);
+        Utils.matToBitmap(des, originalBitmap1);
+        binding.imageView.setImageBitmap(originalBitmap1);
     }
 
     /**
      * 提取水印
+     *
+     * 这里之前是用的转灰度图，但现在改成了通过分离通道来取，要与生成水印进行逆操作
      */
-    private void getMark() {
-//        Mat mat=ImgWatermarkUtil.getImageWatermarkWithText(tranMat);
-
+    private void getMark2() {
         Mat invDft = new Mat();
         Utils.bitmapToMat(originalBitmap1, invDft);
-        invDft = DFTUtil.getInstance().transformImage(invDft);
-//        Core.dft(tranMat,invDft);
-//        Mat restoredImage = new Mat();
-//        invDft.convertTo(restoredImage, CvType.CV_8U);
-        Utils.matToBitmap(invDft, originalBitmap1);
-        binding.imageView.setImageBitmap(originalBitmap1);
+//        Mat grayMat=new Mat();
+//        //将图像转换为灰度
+//        Imgproc.cvtColor(invDft, grayMat, Imgproc.COLOR_BGR2GRAY);
+        List<Mat> channels = new ArrayList<>();
+        Core.split(invDft, channels);
+
+        invDft = DFTUtil.getInstance().transformImage(channels.get(0));
+        Bitmap newB = Bitmap.createBitmap(invDft.width(), invDft.height(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(invDft, newB);
+        binding.imageView.setImageBitmap(newB);
     }
 
     private String TAG = this.getClass().getName();
@@ -119,7 +159,7 @@ public class Activity_opencv_watermark extends AppCompatActivity implements View
     /**
      * 可用的提取水印方法
      */
-    private void getWM() {
+    private void getMark() {
         Mat mat = new Mat();
         Utils.bitmapToMat(originalBitmap1, mat);
 
