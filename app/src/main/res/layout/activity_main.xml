@@ -42,5 +42,17 @@
             app:layout_constraintEnd_toEndOf="@+id/btn_checkDistinct"
             app:layout_constraintStart_toStartOf="@+id/btn_checkDistinct"
             app:layout_constraintTop_toBottomOf="@+id/btn_filterPeople" />
+
+        <Button
+            android:id="@+id/opencv_watermark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:text="4、添加盲水印"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_computPicture" />
     </android.support.constraint.ConstraintLayout>
 </layout>

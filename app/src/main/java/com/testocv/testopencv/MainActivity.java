@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         binding.btnCheckDistinct.setOnClickListener(this);
         binding.btnComputPicture.setOnClickListener(this);
         binding.btnFilterPeople.setOnClickListener(this);
+        binding.opencvWatermark.setOnClickListener(this);
     }
 
     @Override
@@ -38,6 +39,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_filterPeople:
                 //2、判断图中是否有人，定位人脸位置，并对人脸进行剥离
+                break;
+            case R.id.opencv_watermark:
+                //去盲水印页
+                startActivity2(Activity_opencv_watermark.class);
                 break;
 
         }
